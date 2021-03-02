@@ -39,6 +39,7 @@ cdef class StickingCoefficient(KineticsModel):
     cdef public ScalarQuantity _n
     cdef public ScalarQuantity _Ea
     cdef public ScalarQuantity _T0
+    cdef public dict _cov
     
     cpdef double get_sticking_coefficient(self, double T) except -1
 
@@ -56,6 +57,7 @@ cdef class StickingCoefficientBEP(KineticsModel):
     cdef public ScalarQuantity _n
     cdef public ScalarQuantity _alpha
     cdef public ScalarQuantity _E0
+    cdef public dict _cov
     
     cpdef double get_sticking_coefficient(self, double T, double dHrxn=?) except -1
     cpdef double get_activation_energy(self, double dHrxn) except -1

@@ -58,17 +58,22 @@ cdef class StickingCoefficient(KineticsModel):
     `Tmax`          The maximum temperature at which the model is valid, or zero if unknown or undefined
     `Pmin`          The minimum pressure at which the model is valid, or zero if unknown or undefined
     `Pmax`          The maximum pressure at which the model is valid, or zero if unknown or undefined
+    `cov`           A dictionary of coverage dependent parameters to a certain surface species, with a dictionary of
+                    the activation energy dependence on coverage, the power-law exponent of coverage dependence,
+                    and the coefficient for exponential dependence on the coverage
     `comment`       Information about the model (e.g. its source)
     =============== =============================================================
     
     """
 
-    def __init__(self, A=None, n=0.0, Ea=None, T0=(1.0, "K"), Tmin=None, Tmax=None, Pmin=None, Pmax=None, comment=''):
-        KineticsModel.__init__(self, Tmin=Tmin, Tmax=Tmax, Pmin=Pmin, Pmax=Pmax, comment=comment)
+    def __init__(self, A=None, n=0.0, Ea=None, T0=(1.0, "K"), Tmin=None, Tmax=None, Pmin=None, Pmax=None,
+                 cov=None, comment=''):
+        KineticsModel.__init__(self, Tmin=Tmin, Tmax=Tmax, Pmin=Pmin, Pmax=Pmax, cov=cov, comment=comment)
         self.A = A
         self.n = n
         self.Ea = Ea
         self.T0 = T0
+        self.cov = cov
 
     def __repr__(self):
         """
@@ -76,6 +81,7 @@ cdef class StickingCoefficient(KineticsModel):
         StickingCoefficient object.
         """
         string = 'StickingCoefficient(A={0!r}, n={1!r}, Ea={2!r}, T0={3!r}'.format(self.A, self.n, self.Ea, self.T0)
+        # if self.cov is not None: string += ", {}, {'E':({0!r}, {}), 'm':{}, 'a':{}}"
         if self.Tmin is not None: string += ', Tmin={0!r}'.format(self.Tmin)
         if self.Tmax is not None: string += ', Tmax={0!r}'.format(self.Tmax)
         if self.Pmin is not None: string += ', Pmin={0!r}'.format(self.Pmin)
@@ -89,7 +95,7 @@ cdef class StickingCoefficient(KineticsModel):
         A helper function used when pickling a StickingCoefficient object.
         """
         return (StickingCoefficient, (self.A, self.n, self.Ea, self.T0, self.Tmin, self.Tmax, self.Pmin, self.Pmax,
-                                      self.comment))
+                                      self.cov, self.comment))
 
     property A:
         """The preexponential factor."""
@@ -119,15 +125,23 @@ cdef class StickingCoefficient(KineticsModel):
         def __set__(self, value):
             self._T0 = quantity.Temperature(value)
 
+    property cov:
+        """The coverage dependence parameters."""
+        def __get__(self):
+            return self._cov
+        def __set__(self, dict):
+            self._cov = dict
+
     cpdef double get_sticking_coefficient(self, double T) except -1:
         """
         Return the sticking coefficient (dimensionless) at temperature `T` in K. 
         """
-        cdef double A, n, Ea, T0, stickingCoefficient
+        cdef double A, n, Ea, T0, cov, stickingCoefficient
         A = self._A.value_si
         n = self._n.value_si
         Ea = self._Ea.value_si
         T0 = self._T0.value_si
+
         stickingCoefficient = A * (T / T0) ** n * exp(-Ea / (constants.R * T))
         if stickingCoefficient < 0:
             raise ValueError("Sticking coefficients cannot be negative, check your preexponential factor.")
@@ -238,17 +252,22 @@ cdef class StickingCoefficientBEP(KineticsModel):
     `Tmax`          The maximum temperature at which the model is valid, or zero if unknown or undefined
     `Pmin`          The minimum pressure at which the model is valid, or zero if unknown or undefined
     `Pmax`          The maximum pressure at which the model is valid, or zero if unknown or undefined
+    `cov`           A dictionary of coverage dependent parameters to a certain surface species, with a dictionary of
+                    the activation energy dependence on coverage, the power-law exponent of coverage dependence,
+                    and the coefficient for exponential dependence on the coverage
     `comment`       Information about the model (e.g. its source)
     =============== =============================================================
     
     """
 
-    def __init__(self, A=None, n=0.0, alpha=0.0, E0=None, Tmin=None, Tmax=None, Pmin=None, Pmax=None, comment=''):
-        KineticsModel.__init__(self, Tmin=Tmin, Tmax=Tmax, Pmin=Pmin, Pmax=Pmax, comment=comment)
+    def __init__(self, A=None, n=0.0, alpha=0.0, E0=None, Tmin=None, Tmax=None, Pmin=None, Pmax=None,
+                 cov=None, comment=''):
+        KineticsModel.__init__(self, Tmin=Tmin, Tmax=Tmax, Pmin=Pmin, Pmax=Pmax, cov=cov, comment=comment)
         self.A = A
         self.n = n
         self.alpha = alpha
         self.E0 = E0
+        self.cov = cov
 
     def __repr__(self):
         """
@@ -270,7 +289,7 @@ cdef class StickingCoefficientBEP(KineticsModel):
         A helper function used when pickling an StickingCoefficientBEP object.
         """
         return (StickingCoefficientBEP, (self.A, self.n, self.alpha, self.E0, self.Tmin, self.Tmax,
-                                         self.Pmin, self.Pmax, self.comment))
+                                         self.Pmin, self.Pmax, self.cov, self.comment))
 
     property A:
         """The preexponential factor."""
@@ -299,6 +318,13 @@ cdef class StickingCoefficientBEP(KineticsModel):
             return self._E0
         def __set__(self, value):
             self._E0 = quantity.Energy(value)
+
+    property cov:
+        """The coverage dependence parameters."""
+        def __get__(self):
+            return self._cov
+        def __set__(self, dict):
+            self._cov = dict
 
     cpdef double get_sticking_coefficient(self, double T, double dHrxn=0.0) except -1:
         """
@@ -341,6 +367,10 @@ cdef class StickingCoefficientBEP(KineticsModel):
             T0=(1, "K"),
             Tmin=self.Tmin,
             Tmax=self.Tmax,
+            Ek=self.Ek,
+            mk=self.mk,
+            ak=self.ak,
+            species=self.species,
             comment=self.comment,
         )
 
@@ -393,6 +423,9 @@ cdef class SurfaceArrhenius(Arrhenius):
     `Tmax`          The maximum temperature at which the model is valid, or zero if unknown or undefined
     `Pmin`          The minimum pressure at which the model is valid, or zero if unknown or undefined
     `Pmax`          The maximum pressure at which the model is valid, or zero if unknown or undefined
+    `cov`           A dictionary of coverage dependent parameters to a certain surface species, with a dictionary of
+                    the activation energy dependence on coverage, the power-law exponent of coverage dependence,
+                    and the coefficient for exponential dependence on the coverage
     `uncertainty`   Uncertainty information
     `comment`       Information about the model (e.g. its source)
     =============== =============================================================
@@ -405,6 +438,13 @@ cdef class SurfaceArrhenius(Arrhenius):
             return self._A
         def __set__(self, value):
             self._A = quantity.SurfaceRateCoefficient(value)
+
+    property cov:
+        """The coverage dependence parameters."""
+        def __get__(self):
+            return self._cov
+        def __set__(self, dict):
+            self._cov = dict
 
     def __repr__(self):
         """
@@ -427,7 +467,6 @@ cdef class SurfaceArrhenius(Arrhenius):
         """
         return (SurfaceArrhenius, (self.A, self.n, self.Ea, self.T0, self.Tmin, self.Tmax, self.Pmin, self.Pmax,
                                    self.uncertainty, self.comment))
-
 
 ################################################################################
 
@@ -453,6 +492,9 @@ cdef class SurfaceArrheniusBEP(ArrheniusEP):
     `Tmax`          The maximum temperature at which the model is valid, or zero if unknown or undefined
     `Pmin`          The minimum pressure at which the model is valid, or zero if unknown or undefined
     `Pmax`          The maximum pressure at which the model is valid, or zero if unknown or undefined
+    `cov`           A dictionary of coverage dependent parameters to a certain surface species, with a dictionary of
+                    the activation energy dependence on coverage, the power-law exponent of coverage dependence,
+                    and the coefficient for exponential dependence on the coverage
     `uncertainty`   Uncertainty information
     `comment`       Information about the model (e.g. its source)
     =============== =============================================================
@@ -466,6 +508,13 @@ cdef class SurfaceArrheniusBEP(ArrheniusEP):
             return self._A
         def __set__(self, value):
             self._A = quantity.SurfaceRateCoefficient(value)
+
+    property cov:
+        """The coverage dependence parameters."""
+        def __get__(self):
+            return self._cov
+        def __set__(self, dict):
+            self._cov = dict
 
     def __repr__(self):
         """

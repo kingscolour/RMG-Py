@@ -1779,6 +1779,7 @@ def write_kinetics_entry(reaction, species_list, verbose=True, java_library=Fals
             kinetics.Ea.value_si / 4184.
         )
         string += '\n    STICK'
+        # todo: add in COV stuff here
     elif isinstance(kinetics, _kinetics.Arrhenius):
         conversion_factor = kinetics.A.get_conversion_factor_from_si_to_cm_mol_s()
         if not isinstance(kinetics, _kinetics.SurfaceArrhenius):
@@ -1795,6 +1796,7 @@ def write_kinetics_entry(reaction, species_list, verbose=True, java_library=Fals
             kinetics.n.value_si,
             kinetics.Ea.value_si / 4184.
         )
+        # todo: add in COV stuff here
     elif isinstance(kinetics, (_kinetics.Lindemann, _kinetics.Troe)):
         arrhenius = kinetics.arrheniusHigh
         conversion_factor = arrhenius.A.get_conversion_factor_from_si_to_cm_mol_s()
