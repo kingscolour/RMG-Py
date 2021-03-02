@@ -1198,7 +1198,8 @@ class KineticsFamily(Database):
                     alpha=0,
                     E0=deepcopy(data.Ea),
                     Tmin=deepcopy(data.Tmin),
-                    Tmax=deepcopy(data.Tmax)
+                    Tmax=deepcopy(data.Tmax),
+                    cov=deepcopy(data.cov)
                 )
             elif isinstance(data, SurfaceArrhenius):
                 data = SurfaceArrheniusBEP(
@@ -1209,7 +1210,8 @@ class KineticsFamily(Database):
                     alpha=0,
                     E0=deepcopy(data.Ea),
                     Tmin=deepcopy(data.Tmin),
-                    Tmax=deepcopy(data.Tmax)
+                    Tmax=deepcopy(data.Tmax),
+                    cov=deepcopy(data.cov),
                 )
             else:
                 raise NotImplementedError("Unexpected training kinetics type {} for {}".format(type(data), entry))
@@ -1290,7 +1292,8 @@ class KineticsFamily(Database):
                     alpha=0,
                     E0=deepcopy(data.Ea),
                     Tmin=deepcopy(data.Tmin),
-                    Tmax=deepcopy(data.Tmax)
+                    Tmax=deepcopy(data.Tmax),
+                    cov=deepcopy(data.cov),
                 )
             else:
                 data = data.to_arrhenius_ep()
