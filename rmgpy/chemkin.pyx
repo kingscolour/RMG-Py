@@ -1779,7 +1779,10 @@ def write_kinetics_entry(reaction, species_list, verbose=True, java_library=Fals
             kinetics.Ea.value_si / 4184.
         )
         string += '\n    STICK'
-        # todo: add in COV stuff here
+        if kinetics.cov is not None:
+            for species, cov_params in kinetics.cov.items():
+                string += '{0!s:<51} '.format('\n    COV / {species}')
+                string += '{0:<9.3e} {1:<9.3f} {2:<9.3f} /'.format(cov_params['E'].value_si, cov_params['m'], cov_params['a'])
     elif isinstance(kinetics, _kinetics.Arrhenius):
         conversion_factor = kinetics.A.get_conversion_factor_from_si_to_cm_mol_s()
         if not isinstance(kinetics, _kinetics.SurfaceArrhenius):
@@ -1796,7 +1799,10 @@ def write_kinetics_entry(reaction, species_list, verbose=True, java_library=Fals
             kinetics.n.value_si,
             kinetics.Ea.value_si / 4184.
         )
-        # todo: add in COV stuff here
+        if isinstance(kinetics, _kinetics.SurfaceArrhenius) and kinetics.cov:
+            for species, cov_params in kinetics.cov.items():
+                string += '{0!s:<51} '.format('\n    COV / {species}')
+                string += '{0:<9.3e} {1:<9.3f} {2:<9.3f} /'.format(cov_params['E'].value_si, cov_params['m'], cov_params['a'])
     elif isinstance(kinetics, (_kinetics.Lindemann, _kinetics.Troe)):
         arrhenius = kinetics.arrheniusHigh
         conversion_factor = arrhenius.A.get_conversion_factor_from_si_to_cm_mol_s()
