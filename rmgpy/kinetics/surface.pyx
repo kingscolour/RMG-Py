@@ -81,9 +81,13 @@ cdef class StickingCoefficient(KineticsModel):
         StickingCoefficient object.
         """
         string = 'StickingCoefficient(A={0!r}, n={1!r}, Ea={2!r}, T0={3!r}'.format(self.A, self.n, self.Ea, self.T0)
-        # if self.cov is not None: string += ", {}, {'E':({0!r}, {}), 'm':{}, 'a':{}}"
         if self.Tmin is not None: string += ', Tmin={0!r}'.format(self.Tmin)
         if self.Tmax is not None: string += ', Tmax={0!r}'.format(self.Tmax)
+        if self.coverage_dependence is not None:
+            string += f", coverage_dependence={{"
+            for smiles, parameters in self.coverage_dependence.items():
+                string += f"'{smiles}': {{'E':({parameters['E']}), 'm':{parameters['m']}, 'a':{parameters['a']}}}"
+            string += f"}}"
         if self.Pmin is not None: string += ', Pmin={0!r}'.format(self.Pmin)
         if self.Pmax is not None: string += ', Pmax={0!r}'.format(self.Pmax)
         if self.comment != '': string += ', comment="""{0}"""'.format(self.comment)
@@ -129,8 +133,16 @@ cdef class StickingCoefficient(KineticsModel):
         """The coverage dependence parameters."""
         def __get__(self):
             return self._cov
-        def __set__(self, dict):
+        def __set__(self, value):
             self._cov = {}
+            if value:
+                for species, parameters in value.items():
+                    for variable, x in parameters.items():
+                        if variable is 'E':
+                            parameters[variable] = quantity.Energy(x)
+                        else:
+                            parameters[variable] = quantity.Dimensionless(x)
+                    self._cov[species] = parameters
 
     cpdef double get_sticking_coefficient(self, double T) except -1:
         """
@@ -278,6 +290,11 @@ cdef class StickingCoefficientBEP(KineticsModel):
                                                                                          self.E0)
         if self.Tmin is not None: string += ', Tmin={0!r}'.format(self.Tmin)
         if self.Tmax is not None: string += ', Tmax={0!r}'.format(self.Tmax)
+        if self.coverage_dependence is not None:
+            string += f", coverage_dependence={{"
+            for species, parameters in self.coverage_dependence.items():
+                string += f"'{species}': {{'E':({parameters['E']}), 'm':{parameters['m']}, 'a':{parameters['a']}}}"
+            string += f"}}"
         if self.Pmin is not None: string += ', Pmin={0!r}'.format(self.Pmin)
         if self.Pmax is not None: string += ', Pmax={0!r}'.format(self.Pmax)
         if self.comment != '': string += ', comment="""{0}"""'.format(self.comment)
@@ -323,8 +340,16 @@ cdef class StickingCoefficientBEP(KineticsModel):
         """The coverage dependence parameters."""
         def __get__(self):
             return self._cov
-        def __set__(self, dict):
+        def __set__(self, value):
             self._cov = {}
+            if value:
+                for species, parameters in value.items():
+                    for variable, x in parameters.items():
+                        if variable is 'E':
+                            parameters[variable] = quantity.Energy(x)
+                        else:
+                            parameters[variable] = quantity.Dimensionless(x)
+                    self._cov[species] = parameters
 
     cpdef double get_sticking_coefficient(self, double T, double dHrxn=0.0) except -1:
         """
@@ -451,8 +476,16 @@ cdef class SurfaceArrhenius(Arrhenius):
         """The coverage dependence parameters."""
         def __get__(self):
             return self._cov
-        def __set__(self, dict):
+        def __set__(self, value):
             self._cov = {}
+            if value:
+                for species, parameters in value.items():
+                    for variable, x in parameters.items():
+                        if variable is 'E':
+                            parameters[variable] = quantity.Energy(x)
+                        else:
+                            parameters[variable] = quantity.Dimensionless(x)
+                    self._cov[species] = parameters
 
     def __repr__(self):
         """
@@ -462,6 +495,11 @@ cdef class SurfaceArrhenius(Arrhenius):
         string = 'SurfaceArrhenius(A={0!r}, n={1!r}, Ea={2!r}, T0={3!r}'.format(self.A, self.n, self.Ea, self.T0)
         if self.Tmin is not None: string += ', Tmin={0!r}'.format(self.Tmin)
         if self.Tmax is not None: string += ', Tmax={0!r}'.format(self.Tmax)
+        if self.coverage_dependence is not None:
+            string += f", coverage_dependence={{"
+            for species, parameters in self.coverage_dependence.items():
+                string += f"'{species}': {{'E':({parameters['E']}), 'm':{parameters['m']}, 'a':{parameters['a']}}}"
+            string += f"}}"
         if self.Pmin is not None: string += ', Pmin={0!r}'.format(self.Pmin)
         if self.Pmax is not None: string += ', Pmax={0!r}'.format(self.Pmax)
         if self.uncertainty is not None: string += ', uncertainty={0!r}'.format(self.uncertainty)
@@ -532,8 +570,16 @@ cdef class SurfaceArrheniusBEP(ArrheniusEP):
         """The coverage dependence parameters."""
         def __get__(self):
             return self._cov
-        def __set__(self, dict):
+        def __set__(self, value):
             self._cov = {}
+            if value:
+                for species, parameters in value.items():
+                    for variable, x in parameters.items():
+                        if variable is 'E':
+                            parameters[variable] = quantity.Energy(x)
+                        else:
+                            parameters[variable] = quantity.Dimensionless(x)
+                    self._cov[species] = parameters
 
     def __repr__(self):
         """
@@ -544,6 +590,11 @@ cdef class SurfaceArrheniusBEP(ArrheniusEP):
                                                                                       self.E0)
         if self.Tmin is not None: string += ', Tmin={0!r}'.format(self.Tmin)
         if self.Tmax is not None: string += ', Tmax={0!r}'.format(self.Tmax)
+        if self.coverage_dependence is not None:
+            string += f", coverage_dependence={{"
+            for species, parameters in self.coverage_dependence.items():
+                string += f"'{species}': {{'E':({parameters['E']}), 'm':{parameters['m']}, 'a':{parameters['a']}}}"
+            string += f"}}"
         if self.Pmin is not None: string += ', Pmin={0!r}'.format(self.Pmin)
         if self.Pmax is not None: string += ', Pmax={0!r}'.format(self.Pmax)
         if self.uncertainty is not None: string += ', uncertainty={0!r}'.format(self.uncertainty)
