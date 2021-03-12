@@ -68,7 +68,7 @@ cdef class StickingCoefficient(KineticsModel):
 
     def __init__(self, A=None, n=0.0, Ea=None, T0=(1.0, "K"), Tmin=None, Tmax=None, Pmin=None, Pmax=None,
                  cov=None, comment=''):
-        KineticsModel.__init__(self, Tmin=Tmin, Tmax=Tmax, Pmin=Pmin, Pmax=Pmax, cov=cov, comment=comment)
+        KineticsModel.__init__(self, Tmin=Tmin, Tmax=Tmax, Pmin=Pmin, Pmax=Pmax, comment=comment)
         self.A = A
         self.n = n
         self.Ea = Ea
@@ -262,7 +262,7 @@ cdef class StickingCoefficientBEP(KineticsModel):
 
     def __init__(self, A=None, n=0.0, alpha=0.0, E0=None, Tmin=None, Tmax=None, Pmin=None, Pmax=None,
                  cov=None, comment=''):
-        KineticsModel.__init__(self, Tmin=Tmin, Tmax=Tmax, Pmin=Pmin, Pmax=Pmax, cov=cov, comment=comment)
+        KineticsModel.__init__(self, Tmin=Tmin, Tmax=Tmax, Pmin=Pmin, Pmax=Pmax, comment=comment)
         self.A = A
         self.n = n
         self.alpha = alpha
@@ -335,6 +335,7 @@ cdef class StickingCoefficientBEP(KineticsModel):
         Ea = self.get_activation_energy(dHrxn)
         A = self._A.value_si
         n = self._n.value_si
+
         stickingCoefficient = A * T ** n * exp(-Ea / (constants.R * T))
         assert 0 <= stickingCoefficient
         return min(stickingCoefficient, 1.0)
@@ -367,10 +368,7 @@ cdef class StickingCoefficientBEP(KineticsModel):
             T0=(1, "K"),
             Tmin=self.Tmin,
             Tmax=self.Tmax,
-            Ek=self.Ek,
-            mk=self.mk,
-            ak=self.ak,
-            species=self.species,
+            cov = self.cov,
             comment=self.comment,
         )
 
@@ -556,5 +554,6 @@ cdef class SurfaceArrheniusBEP(ArrheniusEP):
             Tmin=self.Tmin,
             Tmax=self.Tmax,
             uncertainty = self.uncertainty,
+            cov = self.cov,
             comment=self.comment,
         )

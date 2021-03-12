@@ -286,6 +286,8 @@ class Reaction:
 
         if self.kinetics:
             if isinstance(self.kinetics, Arrhenius):
+                # if self.kinetics.cov:  # todo: make coverage a list
+                    # ct_reaction = ct.ElementaryReaction(reactants=ct_reactants, products=ct_products, cov=ct_coverage)
                 # Create an Elementary Reaction
                 ct_reaction = ct.ElementaryReaction(reactants=ct_reactants, products=ct_products)
             elif isinstance(self.kinetics, MultiArrhenius):
