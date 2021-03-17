@@ -67,8 +67,10 @@ cdef class StickingCoefficientBEP(KineticsModel):
 
 ################################################################################
 cdef class SurfaceArrhenius(Arrhenius):
+    cdef public dict _cov
     pass
 ################################################################################
 cdef class SurfaceArrheniusBEP(ArrheniusEP):
+    cdef public dict _cov
     pass
 
