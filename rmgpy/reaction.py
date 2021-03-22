@@ -283,36 +283,38 @@ class Reaction:
                 ct_products[product_name] = 1
         if self.specific_collider:  # add a specific collider if exists
             ct_collider[self.specific_collider.to_chemkin() if use_chemkin_identifier else self.specific_collider.label] = 1
-        
-        ct_coverage = {} 
-        if self.kinetics.coverage_dependence:
-            for key in self.kinetics.coverage_dependence:
 
-                ct_E = self.kinetics.coverage_dependence[key]['E'].value*1000 # get to J/mol
-                ct_a = self.kinetics.coverage_dependence[key]['a'].value
-                ct_m = self.kinetics.coverage_dependence[key]['m'].value
-                print(type(ct_a),type(ct_m))
-                ct_list = (ct_a, ct_m, ct_E)
-                cov_spec = Molecule().from_smiles(key)
-                for reac_prod in (self.products, self.reactants):
-                    for species in reac_prod:
-                        print(species)
-                        if species.smiles == cov_spec.smiles:
-                            #special case because smiles for PtH and Pt are both just [Pt]
-                            if (cov_spec.smiles == "Pt]" and cov_spec.get_num_atoms("H") == \
-                                species.molecule[0].get_num_atoms("H")) or cov_spec.smiles != "[Pt]":
-                                new_key = species.label
-                                ct_coverage[new_key] = ct_list
-                print(ct_coverage)
+        # ToDo: this
+        # ct_coverage = {}
+        # if self.kinetics.coverage_dependence:
+        #     for key in self.kinetics.coverage_dependence:
+        #
+        #         ct_E = self.kinetics.coverage_dependence[key]['E'].value*1000 # get to J/mol
+        #         ct_a = self.kinetics.coverage_dependence[key]['a'].value
+        #         ct_m = self.kinetics.coverage_dependence[key]['m'].value
+        #         print(type(ct_a),type(ct_m))
+        #         ct_list = (ct_a, ct_m, ct_E)
+        #         cov_spec = Molecule().from_smiles(key)
+        #         for reac_prod in (self.products, self.reactants):
+        #             for species in reac_prod:
+        #                 print(species)
+        #                 if species.smiles == cov_spec.smiles:
+        #                     #special case because smiles for PtH and Pt are both just [Pt]
+        #                     if (cov_spec.smiles == "Pt]" and cov_spec.get_num_atoms("H") == \
+        #                         species.molecule[0].get_num_atoms("H")) or cov_spec.smiles != "[Pt]":
+        #                         new_key = species.label
+        #                         ct_coverage[new_key] = ct_list
+        #         print(ct_coverage)
 
 
         if self.kinetics:
             if isinstance(self.kinetics, Arrhenius):
-                if self.kinetics.coverage_dependence:
-                    ct_reaction = ct.InterfaceReaction(reactants=ct_reactants, products=ct_products)
-                    ct_reaction.coverage_deps=ct_coverage
-                    print(ct_reaction.coverage_deps)
+                # if self.kinetics.coverage_dependence:
+                #     ct_reaction = ct.InterfaceReaction(reactants=ct_reactants, products=ct_products)
+                    # ct_reaction.coverage_deps=ct_coverage
+                    # print(ct_reaction.coverage_deps)
                 # Create an Elementary Reaction
+                # else:
                 ct_reaction = ct.ElementaryReaction(reactants=ct_reactants, products=ct_products)
             elif isinstance(self.kinetics, MultiArrhenius):
                 # Return a list of elementary reactions which are duplicates
