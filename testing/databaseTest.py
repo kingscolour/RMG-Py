@@ -442,7 +442,7 @@ class TestDatabase(object):  # cannot inherit from unittest.TestCase if we want 
         failed = False
 
         for entry in training:
-            cov_dep = entry.data.cov
+            cov_dep = entry.data.coverage_dependence
             if cov_dep:
                 assert isinstance(cov_dep, dict)
                 for species, parameters in cov_dep.items():

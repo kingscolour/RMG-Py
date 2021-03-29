@@ -1779,8 +1779,8 @@ def write_kinetics_entry(reaction, species_list, verbose=True, java_library=Fals
             kinetics.Ea.value_si / 4184.
         )
         string += '\n    STICK'
-        if kinetics.cov is not None:
-            for species, cov_params in kinetics.cov.items():
+        if kinetics.coverage_dependence is not None:
+            for species, cov_params in kinetics.coverage_dependence.items():
                 string += '{0!s:<51} '.format('\n    COV / {species}')
                 string += '{0:<9.3e} {1:<9.3f} {2:<9.3f} /'.format(cov_params['E'].value_si, cov_params['m'], cov_params['a'])
     elif isinstance(kinetics, _kinetics.Arrhenius):
@@ -1799,8 +1799,8 @@ def write_kinetics_entry(reaction, species_list, verbose=True, java_library=Fals
             kinetics.n.value_si,
             kinetics.Ea.value_si / 4184.
         )
-        if isinstance(kinetics, _kinetics.SurfaceArrhenius) and kinetics.cov:
-            for species, cov_params in kinetics.cov.items():
+        if isinstance(kinetics, _kinetics.SurfaceArrhenius) and kinetics.coverage_dependence:
+            for species, cov_params in kinetics.coverage_dependence.items():
                 string += '{0!s:<51} '.format('\n    COV / {species}')
                 string += '{0:<9.3e} {1:<9.3f} {2:<9.3f} /'.format(cov_params['E'].value_si, cov_params['m'], cov_params['a'])
     elif isinstance(kinetics, (_kinetics.Lindemann, _kinetics.Troe)):

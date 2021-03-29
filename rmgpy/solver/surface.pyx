@@ -232,8 +232,8 @@ cdef class SurfaceReactor(ReactionSystem):
                                                                self.surface_site_density.value_si
                                                                ))
 
-                if rxn.kinetics.cov:
-                    self.cov_dep[j] = rxn.kinetics.cov  # dict
+                if rxn.kinetics.coverage_dependence:
+                    self.cov_dep[j] = rxn.kinetics.coverage_dependence  # dict
 
             else:
                 if not warned and rxn.kinetics.is_pressure_dependent():
@@ -377,7 +377,6 @@ cdef class SurfaceReactor(ReactionSystem):
         kr = self.kb  # are already 'per m3 of reactor' even for surface reactions
         cov_dep = self.cov_dep  # load in coverage dependent parameters
         cov_dep_index_smiles = self.cov_dep_index_smiles  # load in species index to SMILES
-        # current_surface_coverages = self.current_surface_coverages
 
         inet = self.network_indices
         knet = self.network_leak_coefficients

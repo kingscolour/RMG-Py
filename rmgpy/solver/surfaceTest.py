@@ -311,7 +311,7 @@ class SurfaceReactorCheck(unittest.TestCase):
                                                   n=0.5,
                                                   Ea=(5.0, 'kJ/mol'),
                                                   T0=(1.0, 'K'),
-                                                  cov={'*': {'E': (0.0, 'J/mol'), 'm': -1.0, 'a': 0.0}}))
+                                                  coverage_dependence={'*': {'E': (0.0, 'J/mol'), 'm': -1.0, 'a': 0.0}}))
 
         core_species = [h2, x, hx]
         edge_species = []
@@ -333,8 +333,8 @@ class SurfaceReactorCheck(unittest.TestCase):
 
         tlist = np.logspace(-13, -5, 81, dtype=np.float64)
 
-        self.assertIsInstance(rxn1.kinetics.cov, dict)  # check to make sure cov is still the correct type
-        for species, parameters in rxn1.kinetics.cov.items():
+        self.assertIsInstance(rxn1.kinetics.coverage_dependence, dict)  # check to make sure coverage is still the correct type
+        for species, parameters in rxn1.kinetics.coverage_dependence.items():
             self.assertIsInstance(species, str)  # species should be a string
             self.assertIsInstance(parameters, dict)
             self.assertIsNotNone(parameters['E'])
@@ -426,7 +426,7 @@ class SurfaceReactorCheck(unittest.TestCase):
                         products=[ch3x],
                         kinetics=StickingCoefficient(
                             A=0.1, n=0, Ea=(0, 'kcal/mol'), T0=(1, 'K'), Tmin=(200, 'K'), Tmax=(3000, 'K'),
-                            cov={'*': {'E': (0.0, 'J/mol'), 'm': -1.0, 'a': 0.0}},
+                            coverage_dependence={'*': {'E': (0.0, 'J/mol'), 'm': -1.0, 'a': 0.0}},
                             comment="""Exact match found for rate rule (Adsorbate;VacantSite)"""
                         )
                         )
@@ -456,8 +456,8 @@ class SurfaceReactorCheck(unittest.TestCase):
         print("rxn1 rate coefficient",
               rxn1.get_surface_rate_coefficient(rxn_system.T.value_si, rxn_system.surface_site_density.value_si))
 
-        self.assertIsInstance(rxn1.kinetics.cov, dict)  # check to make sure cov is still the correct type
-        for species, parameters in rxn1.kinetics.cov.items():
+        self.assertIsInstance(rxn1.kinetics.coverage_dependence, dict)  # check to make sure coverage is still the correct type
+        for species, parameters in rxn1.kinetics.coverage_dependence.items():
             self.assertIsInstance(species, str)  # species should be a string
             self.assertIsInstance(parameters, dict)
             self.assertIsNotNone(parameters['E'])
