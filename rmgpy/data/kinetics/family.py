@@ -924,6 +924,14 @@ class KineticsFamily(Database):
 
         # Add new reactions to training depository
         for i, reaction in enumerate(reactions):
+            # Convert coverage dependence label to species label
+            if isinstance(entry.data, (SurfaceArrhenius, StickingCoefficient, SurfaceArrheniusBEP, StickingCoefficientBEP)):
+                if reaction.kinetics.coverage_dependence:
+                    coverage_dependence_update = {}
+                    for key, value in reaction.kinetics.coverage_dependence.items():
+                        coverage_dependence_update[species_dict[key]] = value
+                    reaction.kinetics.coverage_dependence = coverage_dependence_update
+
             index = max_index + i + 1
             entry = Entry(
                 index=index,
@@ -1199,7 +1207,7 @@ class KineticsFamily(Database):
                     E0=deepcopy(data.Ea),
                     Tmin=deepcopy(data.Tmin),
                     Tmax=deepcopy(data.Tmax),
-                    cov=deepcopy(data.cov)
+                    coverage_dependence=deepcopy(data.coverage_dependence)
                 )
             elif isinstance(data, SurfaceArrhenius):
                 data = SurfaceArrheniusBEP(
@@ -1211,7 +1219,7 @@ class KineticsFamily(Database):
                     E0=deepcopy(data.Ea),
                     Tmin=deepcopy(data.Tmin),
                     Tmax=deepcopy(data.Tmax),
-                    cov=deepcopy(data.cov),
+                    coverage_dependence=deepcopy(data.coverage_dependence),
                 )
             else:
                 raise NotImplementedError("Unexpected training kinetics type {} for {}".format(type(data), entry))
@@ -1293,7 +1301,7 @@ class KineticsFamily(Database):
                     E0=deepcopy(data.Ea),
                     Tmin=deepcopy(data.Tmin),
                     Tmax=deepcopy(data.Tmax),
-                    cov=deepcopy(data.cov),
+                    coverage_dependence=deepcopy(data.coverage_dependence),
                 )
             else:
                 data = data.to_arrhenius_ep()
