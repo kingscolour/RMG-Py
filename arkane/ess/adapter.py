@@ -46,6 +46,14 @@ class ESSAdapter(ABC):
     """
 
     @abstractmethod
+    def check_for_errors(self):
+        """
+        Checks the log file for common errors.
+        Optionally runs when the class is initialized to catch errors before parsing relevant information.
+        """
+        pass
+
+    @abstractmethod
     def get_number_of_atoms(self):
         """
         Return the number of atoms in the molecular configuration.
