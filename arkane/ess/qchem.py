@@ -278,12 +278,12 @@ class QChemLog(ESSAdapter):
         """
         e_elect = None
         with open(self.path, 'r') as f:
-            a = b = 0
+            a = b = None
             for line in f:
                 if 'Final energy is' in line:
-                    a = float(line.split()[3]) * constants.E_h * constants.Na
+                    a = float(line.split()[-1]) * constants.E_h * constants.Na
                 if 'Total energy in the final basis set' in line:
-                    b = float(line.split()[8]) * constants.E_h * constants.Na
+                    b = float(line.split()[-1]) * constants.E_h * constants.Na
                 e_elect = a or b
         if e_elect is None:
             raise LogError('Unable to find energy in QChem output file {0}.'.format(self.path))
