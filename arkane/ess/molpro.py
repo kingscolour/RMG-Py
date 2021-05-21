@@ -34,8 +34,8 @@ Used to parse Molpro output files
 
 import logging
 import math
-
 import numpy as np
+import os.path
 
 import rmgpy.constants as constants
 from rmgpy.statmech import IdealGasTranslation, NonlinearRotor, LinearRotor, HarmonicOscillator, Conformer
@@ -56,8 +56,26 @@ class MolproLog(ESSAdapter):
     MolproLog is an adapter for the abstract class ESSAdapter.
     """
 
-    def __init__(self, path):
+    def __init__(self, path, check_for_errors=True):
         self.path = path
+        if check_for_errors:
+            self.check_for_errors()
+
+    def check_for_errors(self):
+        """
+        Checks for common errors in a Molpro log file.
+        If any are found, this method will raise an error and crash.
+        """
+        with open(os.path.join(self.path), 'r') as f:
+            lines = f.readlines()
+            error = None
+            for line in reversed(lines):
+                # check for common error messages
+                if 'No convergence' in line:
+                    error = 'Unconverged'
+                    break
+            if error:
+                raise LogError(f'There was an error with Molpro output file {self.path} due to line:\n{line}')
 
     def get_number_of_atoms(self):
         """
