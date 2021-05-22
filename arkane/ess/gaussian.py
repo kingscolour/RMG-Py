@@ -57,8 +57,47 @@ class GaussianLog(ESSAdapter):
     arrays. GaussianLog is an adapter for the abstract class ESSAdapter.
     """
 
-    def __init__(self, path):
+    def __init__(self, path, check_for_errors=True):
         self.path = path
+        if check_for_errors:
+            self.check_for_errors()
+
+    def check_for_errors(self):
+        """
+        Checks for common errors in a Gaussian log file.
+        If any are found, this method will raise an error and crash.
+        """
+        with open(os.path.join(self.path), 'r') as f:
+            lines = f.readlines()
+            error, keywords = None, None
+            for line in reversed(lines):
+                # check for common error messages
+                if 'termination' in line:
+                    if 'l9999.exe' in line or 'link 9999' in line:
+                        error = 'Unconverged'
+                    elif 'l101.exe' in line:
+                        error = 'The blank line after the coordinate section is missing, ' \
+                                'or charge/multiplicity was not specified correctly.'
+                    elif 'l103.exe' in line:
+                        error = 'Internal coordinate error'
+                    elif 'l108.exe' in line:
+                        error = 'There are two blank lines between z-matrix and ' \
+                                'the variables, expected only one.'
+                    elif 'l202.exe' in line:
+                        error = 'During the optimization process, either the standard ' \
+                                'orientation or the point group of the molecule has changed.'
+                    elif 'l502.exe' in line:
+                        error = 'Unconverged SCF.'
+                    elif 'l716.exe' in line:
+                        error = 'Angle in z-matrix outside the allowed range 0 < x < 180.'
+                    elif 'l906.exe' in line:
+                        error = 'The MP2 calculation has failed. It may be related to pseudopotential. ' \
+                                'Basis sets (CEP-121G*) that are used with polarization functions, ' \
+                                'where no polarization functions actually exist.'
+                    elif 'l913.exe' in line:
+                        error = 'Maximum optimization cycles reached.'
+                    if error:
+                        raise LogError(f'There was an error with Gaussian output file {self.path} due to line:\n{line}')
 
     def get_number_of_atoms(self):
         """
@@ -247,9 +286,6 @@ class GaussianLog(ESSAdapter):
 
                         # Read the next line in the file
                         line = f.readline()
-
-                if 'Error termination' in line:
-                    raise LogError(f'The Gaussian job in {self.path} did not converge.')
 
                 # Read the next line in the file
                 line = f.readline()
