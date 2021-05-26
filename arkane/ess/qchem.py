@@ -75,12 +75,11 @@ class QChemLog(ESSAdapter):
                 if 'SCF failed' in line:
                     error = 'SCF failed'
                     break
-                elif 'error' in line and 'DIIS' not in line and 'gprntSymmMtrx' not in line \
-                        and 'Relative error' not in line and 'zonesort' not in line:
+                elif 'error' in line and 'DIIS' not in line and \
+                     'Relative error' not in line and 'zonesort' not in line:
                     # these are **normal** lines that we should not capture:
                     # "SCF converges when DIIS error is below 1.0E-08", or
                     # "Cycle       Energy         DIIS Error" or
-                    # "gprntSymmMtrx error report: "
 
                     # "Relative error" is captured as a warning later
 
