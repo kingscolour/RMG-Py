@@ -66,9 +66,9 @@ class QChemLogTest(unittest.TestCase):
         Uses QChem log files to test that
         number of atoms can be properly read.
         """
-        log = QChemLog(os.path.join(self.data_path, 'npropyl.out'))
+        log = QChemLog(os.path.join(self.data_path, 'npropyl.out'), check_for_errors=False)
         self.assertEqual(log.get_number_of_atoms(), 10)
-        log = QChemLog(os.path.join(self.data_path, 'co.out'))
+        log = QChemLog(os.path.join(self.data_path, 'co.out'), check_for_errors=False)
         self.assertEqual(log.get_number_of_atoms(), 2)
 
     def test_energy_from_qchem_log(self):
@@ -76,11 +76,11 @@ class QChemLogTest(unittest.TestCase):
         Uses QChem log files to test that
         molecular energies can be properly read.
         """
-        log = QChemLog(os.path.join(self.data_path, 'npropyl.out'))
+        log = QChemLog(os.path.join(self.data_path, 'npropyl.out'), check_for_errors=False)
         self.assertAlmostEqual(log.load_energy(), -310896203.5432524, delta=1e-7)
-        log = QChemLog(os.path.join(self.data_path, 'co.out'))
+        log = QChemLog(os.path.join(self.data_path, 'co.out'), check_for_errors=False)
         self.assertAlmostEqual(log.load_energy(), -297402545.0217114, delta=1e-7)
-        log = QChemLog(os.path.join(self.data_path, 'CH4_sp.out'))
+        log = QChemLog(os.path.join(self.data_path, 'CH4_sp.out'), check_for_errors=False)
         self.assertAlmostEqual(log.load_energy(), -106356735.53661588, delta=1e-7)
 
     def test_zero_point_energy_from_qchem_log(self):
@@ -88,9 +88,9 @@ class QChemLogTest(unittest.TestCase):
         Uses QChem log files to test that
         zero point energies can be properly read.
         """
-        log = QChemLog(os.path.join(self.data_path, 'npropyl.out'))
+        log = QChemLog(os.path.join(self.data_path, 'npropyl.out'), check_for_errors=False)
         self.assertAlmostEqual(log.load_zero_point_energy(), 228785.304, delta=1e-3)
-        log = QChemLog(os.path.join(self.data_path, 'co.out'))
+        log = QChemLog(os.path.join(self.data_path, 'co.out'), check_for_errors=False)
         self.assertAlmostEqual(log.load_zero_point_energy(), 13476.664, delta=1e-3)
         log = QChemLog(os.path.join(self.data_path, 'formyl_azide.out'), check_for_errors=False)
         self.assertAlmostEqual(log.load_zero_point_energy(), 83014.744, delta=1e-3)
@@ -100,11 +100,11 @@ class QChemLogTest(unittest.TestCase):
         Uses QChem log files to test that
         molecular energies can be properly read.
         """
-        log = QChemLog(os.path.join(self.data_path, 'npropyl.out'))
+        log = QChemLog(os.path.join(self.data_path, 'npropyl.out'), check_for_errors=False)
         conformer, unscaled_frequencies = log.load_conformer()
         self.assertEqual(len(conformer.modes[2]._frequencies.value), 24)
         self.assertEqual(conformer.modes[2]._frequencies.value[5], 881.79)
-        log = QChemLog(os.path.join(self.data_path, 'co.out'))
+        log = QChemLog(os.path.join(self.data_path, 'co.out'), check_for_errors=False)
         conformer, unscaled_frequencies = log.load_conformer()
         self.assertEqual(len(conformer.modes[2]._frequencies.value), 1)
         self.assertEqual(conformer.modes[2]._frequencies.value, 2253.16)
@@ -114,7 +114,7 @@ class QChemLogTest(unittest.TestCase):
         Uses a QChem log file for npropyl to test that its
         molecular modes can be properly read.
         """
-        log = QChemLog(os.path.join(self.data_path, 'npropyl.out'))
+        log = QChemLog(os.path.join(self.data_path, 'npropyl.out'), check_for_errors=False)
         conformer, unscaled_frequencies = log.load_conformer()
 
         self.assertTrue(len([mode for mode in conformer.modes if isinstance(mode, IdealGasTranslation)]) == 1)
@@ -127,10 +127,10 @@ class QChemLogTest(unittest.TestCase):
         Uses QChem log files to test that
         molecular degrees of freedom can be properly read.
         """
-        log = QChemLog(os.path.join(self.data_path, 'npropyl.out'))
+        log = QChemLog(os.path.join(self.data_path, 'npropyl.out'), check_for_errors=False)
         conformer, unscaled_frequencies = log.load_conformer()
         self.assertEqual(conformer.spin_multiplicity, 2)
-        log = QChemLog(os.path.join(self.data_path, 'co.out'))
+        log = QChemLog(os.path.join(self.data_path, 'co.out'), check_for_errors=False)
         conformer, unscaled_frequencies = log.load_conformer()
         self.assertEqual(conformer.spin_multiplicity, 1)
 
@@ -139,7 +139,7 @@ class QChemLogTest(unittest.TestCase):
         Uses a QChem log file for CO to test that its
         molecular degrees of freedom can be properly read.
         """
-        log = QChemLog(os.path.join(self.data_path, 'co.out'))
+        log = QChemLog(os.path.join(self.data_path, 'co.out'), check_for_errors=False)
         conformer, unscaled_frequencies = log.load_conformer()
         E0 = log.load_energy()
 
